@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/home"
+        android:icon="@drawable/ic_baseline_home_24"
+        android:title="Home" />
+    <item
+        android:id="@+id/training"
+        android:icon="@drawable/ic_baseline_train_24"
+        android:title="Model Training" />
+    <item
+        android:id="@+id/integrations"
+        android:icon="@drawable/ic_baseline_integration_instructions_24"
+        android:title="Integrations" />
+    <item
+        android:id="@+id/settings"
+        android:icon="@drawable/ic_baseline_settings_24"
+        android:title="Settings" />
+    <item
+        android:id="@+id/helper"
+        android:icon="@drawable/ic_baseline_help_24"
+        android:title="Help" />
+<!--    <item android:id="@+id/set_email" android:title="@string/configure" />
+    <item android:id="@+id/skip_config" android:title="@string/skip_config" android:checkable="true"/>-->
+</menu>

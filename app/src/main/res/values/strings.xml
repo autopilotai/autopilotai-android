@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+    ~ Copyright 2023 AutoPilot AI. All Rights Reserved.
+    ~
+    ~ Licensed under the Apache License, Version 2.0 (the "License");
+    ~ you may not use this file except in compliance with the License.
+    ~ You may obtain a copy of the License at
+    ~
+    ~       http://www.apache.org/licenses/LICENSE-2.0
+    ~
+    ~ Unless required by applicable law or agreed to in writing, software
+    ~ distributed under the License is distributed on an "AS IS" BASIS,
+    ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    ~ See the License for the specific language governing permissions and
+    ~ limitations under the License.
+-->
+<resources>
+    <string name="app_name">AutoPilot AI</string>
+    <string name="capture_button_alt">Capture</string>
+    <string name="alt_bottom_sheet_chevron">Bottom sheet expandable indicator</string>
+
+    <string name="alt_bottom_sheet_max_results_button_minus">Decreasing maxium detected results
+        button</string>
+    <string name="alt_bottom_sheet_max_results_button_plus">Increasing maxium detected results
+        button</string>
+    <string name="alt_bottom_sheet_threshold_button_minus">Decreasing threshold of detected object
+        results button</string>
+    <string name="alt_bottom_sheet_threshold_button_plus">Increasing threshold of detected object
+        results button</string>
+    <string name="alt_bottom_sheet_thread_button_minus">Decrease the number of threads used</string>
+    <string name="alt_bottom_sheet_thread_button_plus">Increase the number of threads used</string>
+
+    <string name="label_interence_time">Inference Time</string>
+    <string name="label_fps">Frames per Second</string>
+    <string name="label_confidence_threshold">Threshold</string>
+    <string name="label_max_results">Max Results</string>
+    <string name="label_threads">Number of Threads</string>
+    <string name="label_delegate">Delegate</string>
+    <string name="label_models">ML Model</string>
+
+    <string-array name="delegate_spinner_titles">
+        <item>CPU</item>
+        <item>GPU</item>
+        <item>NNAPI</item>
+    </string-array>
+
+    <string-array name="models_spinner_titles">
+        <item>MobileNet V1</item>
+        <item>EfficientDet Lite0</item>
+        <item>EfficientDet Lite1</item>
+        <item>EfficientDet Lite2</item>
+        <item>Custom Model</item>
+    </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="control_dialog_thread_button_minus">Decrease the number of threads used</string>
+    <string name="control_dialog_thread_button_plus">Increase the number of threads used</string>
+    <string name="label_inference_time">Inference Time</string>
+    <string name="helper_dialog_title">How to use the app</string>
+    <string name="helper_dialog_content">
+        How to use the Training section:\n
+        1. There are 4 classes in the app represented by the 4 numbers
+        (1..4)\n\n
+        2. Each number can be associated with a category of an object(e.g.
+        car, fruit, etc…)\n\n
+        3. Take at least 1 image to enable training. For the intended usage,
+        please take at least 100 images per category before training.\n\n
+        4. Use the number button while pointing the camera at an object to
+        collect the image.\n\n
+        If you click the number button once, it will collect a sample of the
+        object and save it. If you long-press the shape button, it will
+        continuously collect samples until you release it.\n\n
+        5. Press the train button to start training. Once the loss becomes
+        small enough (e.g. \uFE641.0), press the pause button. If the loss
+        does not converge to a small number, then press the pause button, add
+        more images for each category, and press the resume button.\n\n
+        6. Switch to the inference mode and point the camera to some object.
+        Each class button will display the probability of which the object
+        falls into that category and highlight the most probable one.\n\n
+        If training has been done well, the correct category will be
+        highlighted. If the object does not fall into any of the four
+        categories trained, then the app will still try to highlight any one
+        of the closest categories with its best guess.\n\n
+        7. You can always switch back to the training mode and capture more
+        images.
+    </string>
+    <string name="tv_number_of_threads_default">2</string>
+    <string name="btn_setting_dialog_cancel">Cancel</string>
+    <string name="btn_setting_dialog_confirm">Confirm</string>
+    <string name="radio_btn_training_mode">Training</string>
+    <string name="radio_btn_inference_mode">Inference</string>
+    <string name="tv_class_one">1</string>
+    <string name="tv_class_two">2</string>
+    <string name="tv_class_three">3</string>
+    <string name="tv_class_four">4</string>
+    <string name="tv_start_training">Train</string>
+    <string name="tv_pause_training">Pause</string>
+    <string name="tv_resume_training">Resume</string>
+    <string name="tv_collect_sample">Collect sample</string>
+    <string name="tv_icon_helper">\?</string>
+
+    // IFTTT
+    <string name="user_id_hint">User id</string>
+    <string name="email_hint">Email</string>
+    <string name="start">Start</string>
+    <string name="empty_user_id">User id cannot be empty</string>
+    <string name="sign_in">Sign in</string>
+    <string name="user_auth_error">User authentication failed.</string>
+    <string name="network_request_error">Network request failed.</string>
+    <string name="disable">Disable</string>
+    <string name="enable">Enable</string>
+    <string name="turn_on">Turn on</string>
+    <string name="configure">Configure</string>
+    <string name="email_title">Please enter your email</string>
+    <string name="logout">Logout</string>
+    <string name="login">Login</string>
+    <string name="select_connection">Select a connection.</string>
+    <string name="skip_config">Skip configuration</string>
+    <string name="geofences_activated">Geofences activated</string>
+    <string name="geofences_deactivated">Geofences deactivated</string>
+    <string name="foreground_notification_channel_name">Location foreground service</string>
+    <string name="foreground_notification_title">Location foreground service is running…</string>
+    <string name="background_location_permission_request">Please select \"Allow all the time\" in app settings for Location permission, and then restart the app.</string>
+    <string name="ok">OK</string>
+    <string name="awareness_api_key" translatable="false">YOUR_AWARENESS_API_KEY</string>
+    <string-array name="connections">
+        <item>Connect SMS</item>
+        <item>Connect Gmail</item>
+    </string-array>
+    <string-array name="connection_ids">
+        <item>itza689S</item>
+        <item>sGr5xMti</item>
+    </string-array>
+</resources>

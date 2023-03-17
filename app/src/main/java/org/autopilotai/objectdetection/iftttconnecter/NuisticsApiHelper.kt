@@ -1,0 +1,58 @@
+package org.autopilotai.objectdetection.iftttconnecter
+
+import com.fasterxml.jackson.annotation.JsonProperty
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Call
+import retrofit2.Retrofit
+import retrofit2.converter.jackson.JacksonConverterFactory
+import retrofit2.http.Body
+import retrofit2.http.POST
+import java.io.IOException
+import java.util.UUID
+
+object NuisticsApiHelper {
+    private val nuisticsApi: NuisticsApi
+
+    init {
+        val client =
+            OkHttpClient.Builder().addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://03a9-47-188-92-41.ngrok.io")
+            .addConverterFactory(JacksonConverterFactory.create())
+            .client(client)
+            .build()
+
+        nuisticsApi = retrofit.create(NuisticsApi::class.java)
+    }
+
+    fun sendImageDescription(imageInfo: ImageInfo): ImageInfo? {
+        if (imageInfo == null) {
+            return null
+        }
+
+        return try {
+            val response = nuisticsApi.sendImageDescription(imageInfo).execute()
+            if (response.isSuccessful) {
+                response.body()
+            } else {
+                null
+            }
+        } catch (e: IOException) {
+            null
+        }
+    }
+
+    interface NuisticsApi {
+        @POST("/nuistics_request")
+        fun sendImageDescription(@Body imageInfo: ImageInfo): Call<ImageInfo>
+    }
+
+    data class ImageInfo(
+        @JsonProperty("id") val id: UUID,
+        @JsonProperty("account") val account: String,
+        @JsonProperty("description") val description: String
+    )
+}
