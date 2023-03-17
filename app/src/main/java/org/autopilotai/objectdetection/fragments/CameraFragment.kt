@@ -36,7 +36,7 @@ import androidx.navigation.Navigation
 import org.autopilotai.objectdetection.ObjectDetectorHelper
 import org.autopilotai.objectdetection.R
 import org.autopilotai.objectdetection.databinding.FragmentCameraBinding
-import org.autopilotai.objectdetection.iftttconnecter.NuisticsApiHelper
+import org.autopilotai.objectdetection.iftttconnecter.AutopilotAIApiHelper
 import org.tensorflow.lite.task.vision.detector.Detection
 import java.util.*
 import java.util.concurrent.ExecutorService
@@ -119,12 +119,12 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
         fragmentCameraBinding.cameraCaptureButton.setOnClickListener {
             if(!detectionResults.isNullOrEmpty()){
                 if (detectionResults!![0].categories[0].score > 0.75) {
-                    val imageInfo = NuisticsApiHelper.ImageInfo(
+                    val imageInfo = AutopilotAIApiHelper.ImageInfo(
                         id = UUID.randomUUID(),
                         account = "NL42BUNQ9876543210",
                         description = detectionResults!![0].categories[0].label
                     )
-                    NuisticsApiHelper.sendImageDescription(imageInfo)
+                    AutopilotAIApiHelper.sendImageDescription(imageInfo)
 
                     val msg = "Sent data to IFTTT -> Label: " + detectionResults?.get(0)?.categories?.get(0)?.label.toString() + ", Score:" + detectionResults?.get(0)?.categories?.get(0)?.score.toString();
                     Toast.makeText(requireActivity().applicationContext,msg,Toast.LENGTH_SHORT).show()

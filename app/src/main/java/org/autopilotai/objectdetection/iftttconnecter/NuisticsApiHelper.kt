@@ -11,8 +11,8 @@ import retrofit2.http.POST
 import java.io.IOException
 import java.util.UUID
 
-object NuisticsApiHelper {
-    private val nuisticsApi: NuisticsApi
+object AutopilotAIApiHelper {
+    private val autopilotAIApi: AutopilotAIApi
 
     init {
         val client =
@@ -25,7 +25,7 @@ object NuisticsApiHelper {
             .client(client)
             .build()
 
-        nuisticsApi = retrofit.create(NuisticsApi::class.java)
+        autopilotAIApi = retrofit.create(AutopilotAIApi::class.java)
     }
 
     fun sendImageDescription(imageInfo: ImageInfo): ImageInfo? {
@@ -34,7 +34,7 @@ object NuisticsApiHelper {
         }
 
         return try {
-            val response = nuisticsApi.sendImageDescription(imageInfo).execute()
+            val response = autopilotAIApi.sendImageDescription(imageInfo).execute()
             if (response.isSuccessful) {
                 response.body()
             } else {
@@ -45,7 +45,7 @@ object NuisticsApiHelper {
         }
     }
 
-    interface NuisticsApi {
+    interface AutopilotAIApi {
         @POST("/nuistics_request")
         fun sendImageDescription(@Body imageInfo: ImageInfo): Call<ImageInfo>
     }
