@@ -20,7 +20,7 @@ object AutopilotAIApiHelper {
                 .build()
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://03a9-47-188-92-41.ngrok.io")
+            .baseUrl("https://webapp-autopilotai-api.azurewebsites.net")
             .addConverterFactory(JacksonConverterFactory.create())
             .client(client)
             .build()
@@ -46,7 +46,7 @@ object AutopilotAIApiHelper {
     }
 
     interface AutopilotAIApi {
-        @POST("/nuistics_request")
+        @POST("/request")
         fun sendImageDescription(@Body imageInfo: ImageInfo): Call<ImageInfo>
     }
 

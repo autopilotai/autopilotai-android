@@ -118,10 +118,10 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
 
         fragmentCameraBinding.cameraCaptureButton.setOnClickListener {
             if(!detectionResults.isNullOrEmpty()){
-                if (detectionResults!![0].categories[0].score > 0.75) {
+                if (detectionResults!![0].categories[0].score > 0.60) {
                     val imageInfo = AutopilotAIApiHelper.ImageInfo(
                         id = UUID.randomUUID(),
-                        account = "NL42BUNQ9876543210",
+                        account = "SamsungNote20Ultra56",
                         description = detectionResults!![0].categories[0].label
                     )
                     AutopilotAIApiHelper.sendImageDescription(imageInfo)
