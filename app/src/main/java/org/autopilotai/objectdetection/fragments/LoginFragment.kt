@@ -100,7 +100,7 @@ class LoginFragment : Fragment() {
         // Setup the WebAuthProvider, using the custom scheme and scope.
         WebAuthProvider.login(account)
             .withScheme(getString(R.string.com_auth0_scheme))
-            .withScope("openid profile email read:current_user update:current_user_metadata")
+            .withScope(getString(R.string.com_auth0_scope))
             .withAudience("https://${getString(R.string.com_auth0_domain)}/api/v2/")
 
             // Launch the authentication passing the callback where the results will be received

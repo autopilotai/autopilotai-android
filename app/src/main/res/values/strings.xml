@@ -136,6 +136,7 @@
     <string name="com_auth0_domain">"dev-8smh4pafwr18iywh.us.auth0.com"</string>
     <string name="com_auth0_client_id">"0tZaRYINFQhg0ina63nfSxYBtjnGbYoO"</string>
     <string name="com_auth0_scheme">demo</string>
+    <string name="com_auth0_scope">openid profile email read:current_user update:current_user_metadata</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
