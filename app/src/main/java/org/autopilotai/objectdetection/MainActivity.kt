@@ -58,8 +58,8 @@ class MainActivity : AppCompatActivity() {
                     loadFragment(SettingFragment())
                     true
                 }
-                R.id.helper -> {
-                    loadFragment(HelperFragment())
+                R.id.login -> {
+                    loadFragment(LoginFragment())
                     true
                 }
                 else -> {
