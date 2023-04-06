@@ -41,7 +41,8 @@ class PermissionsFragment : Fragment() {
         ) { isGranted: Boolean ->
             if (isGranted) {
                 Toast.makeText(context, "Permission request granted", Toast.LENGTH_LONG).show()
-                navigateToCamera()
+                //navigateToCamera()
+                navigateToLogin()
             } else {
                 Toast.makeText(context, "Permission request denied", Toast.LENGTH_LONG).show()
             }
@@ -75,7 +76,8 @@ class PermissionsFragment : Fragment() {
                 requireContext(),
                 Manifest.permission.CAMERA
             ) == PackageManager.PERMISSION_GRANTED -> {
-                navigateToCamera()
+                //navigateToCamera()
+                navigateToLogin()
             }
             else -> {
                 requestPermissionLauncher.launch(
@@ -84,10 +86,17 @@ class PermissionsFragment : Fragment() {
         }
     }
 
-    private fun navigateToCamera() {
+/*    private fun navigateToCamera() {
         lifecycleScope.launchWhenStarted {
             Navigation.findNavController(requireActivity(), R.id.fragment_container).navigate(
                 PermissionsFragmentDirections.actionPermissionsToCamera())
+        }
+    }*/
+
+    private fun navigateToLogin() {
+        lifecycleScope.launchWhenStarted {
+            Navigation.findNavController(requireActivity(), R.id.fragment_container).navigate(
+                PermissionsFragmentDirections.actionPermissionsFragmentToLoginFragment())
         }
     }
 

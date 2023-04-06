@@ -32,9 +32,9 @@ import androidx.camera.core.ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
+import androidx.fragment.app.viewModels
+import org.autopilotai.objectdetection.LoginViewModel
 import org.autopilotai.objectdetection.ObjectDetectorHelper
-import org.autopilotai.objectdetection.R
 import org.autopilotai.objectdetection.databinding.FragmentCameraBinding
 import org.autopilotai.objectdetection.iftttconnecter.AutopilotAIApiHelper
 import org.tensorflow.lite.task.vision.detector.Detection
@@ -64,15 +64,21 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
     /** Blocking camera operations are performed using this executor */
     private lateinit var cameraExecutor: ExecutorService
 
-    override fun onResume() {
+    private val viewModel by viewModels<LoginViewModel>()
+
+/*    override fun onResume() {
         super.onResume()
         // Make sure that all permissions are still present, since the
         // user could have removed them while the app was in paused state.
-        if (!PermissionsFragment.hasPermissions(requireContext())) {
+*//*        if (!PermissionsFragment.hasPermissions(requireContext())) {
             Navigation.findNavController(requireActivity(), R.id.fragment_container)
                 .navigate(CameraFragmentDirections.actionCameraToPermissions())
+        } else *//*
+            if (viewModel.getAuthenticationState() == LoginViewModel.AuthenticationState.UNAUTHENTICATED) {
+            Navigation.findNavController(requireActivity(), R.id.fragment_container)
+                .navigate(CameraFragmentDirections.actionCameraFragmentToLoginFragment())
         }
-    }
+    }*/
 
     override fun onDestroyView() {
         _fragmentCameraBinding = null

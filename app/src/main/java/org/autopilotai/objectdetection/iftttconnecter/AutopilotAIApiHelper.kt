@@ -45,14 +45,42 @@ object AutopilotAIApiHelper {
         }
     }
 
+    fun getIFTTTUserToken(userInfo: UserInfo): String? {
+        if (userInfo == null) {
+            return null
+        }
+
+        return try {
+            val response = autopilotAIApi.getIFTTTUserToken(userInfo).execute()
+            if (response.isSuccessful) {
+                response.body()?.user_token
+            } else {
+                null
+            }
+        } catch (e: IOException) {
+            null
+        }
+    }
+
     interface AutopilotAIApi {
         @POST("/request")
         fun sendImageDescription(@Body imageInfo: ImageInfo): Call<ImageInfo>
+
+        @POST("/ifttt/v1/user_token")
+        fun getIFTTTUserToken(@Body userInfo: UserInfo): Call<Token>
     }
 
     data class ImageInfo(
         @JsonProperty("id") val id: UUID,
         @JsonProperty("account") val account: String,
         @JsonProperty("description") val description: String
+    )
+
+    data class UserInfo(
+        @JsonProperty("user_id") val user_id: String?,
+    )
+
+    data class Token (
+        @JsonProperty("user_token") val user_token: String?
     )
 }

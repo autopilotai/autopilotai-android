@@ -42,6 +42,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.Navigation
+import org.autopilotai.objectdetection.LoginViewModel
 import org.autopilotai.objectdetection.MainViewModel
 import org.autopilotai.objectdetection.R
 import org.autopilotai.objectdetection.TransferLearningHelper
@@ -73,6 +74,7 @@ class TrainingFragment : Fragment(),
     private lateinit var bitmapBuffer: Bitmap
 
     private val viewModel: MainViewModel by activityViewModels()
+    private val viewModel2: LoginViewModel by activityViewModels()
     private var preview: Preview? = null
     private var imageAnalyzer: ImageAnalysis? = null
     private var camera: Camera? = null
@@ -130,11 +132,15 @@ class TrainingFragment : Fragment(),
     override fun onResume() {
         super.onResume()
 
-        if (!PermissionsFragment.hasPermissions(requireContext())) {
+/*        if (!PermissionsFragment.hasPermissions(requireContext())) {
             Navigation.findNavController(
                 requireActivity(),
                 R.id.fragment_container
             ).navigate(CameraFragmentDirections.actionCameraToPermissions())
+        }*/
+        if (viewModel2.getAuthenticationState() == LoginViewModel.AuthenticationState.UNAUTHENTICATED) {
+            Navigation.findNavController(requireActivity(), R.id.fragment_container)
+                .navigate(TrainingFragmentDirections.actionTrainingFragmentToLoginFragment())
         }
     }
 

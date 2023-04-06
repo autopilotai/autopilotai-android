@@ -1,21 +1,23 @@
 package org.autopilotai.objectdetection.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
-import com.auth0.android.management.ManagementException
-import com.auth0.android.management.UsersAPIClient
 import com.auth0.android.provider.WebAuthProvider
 import com.auth0.android.result.Credentials
 import com.auth0.android.result.UserProfile
 import com.google.android.material.snackbar.Snackbar
+import org.autopilotai.objectdetection.LoginViewModel
 import org.autopilotai.objectdetection.R
 import org.autopilotai.objectdetection.databinding.FragmentLoginBinding
 
@@ -41,9 +43,11 @@ class LoginFragment : Fragment() {
         get() = _fragmentLoginBinding!!
 
     private lateinit var account: Auth0
-    //private lateinit var binding: FragmentLoginBinding
     private var cachedCredentials: Credentials? = null
     private var cachedUserProfile: UserProfile? = null
+
+    // Get a reference to the ViewModel scoped to this Fragment
+    private val viewModel: LoginViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,8 +68,25 @@ class LoginFragment : Fragment() {
 
         fragmentLoginBinding.buttonLogin.setOnClickListener { loginWithBrowser() }
         fragmentLoginBinding.buttonLogout.setOnClickListener { logout() }
-        fragmentLoginBinding.buttonGetMetadata.setOnClickListener { getUserMetadata() }
-        fragmentLoginBinding.buttonPatchMetadata.setOnClickListener { patchUserMetadata() }
+
+        // Observe the authentication state so we can know if the user has logged in successfully.
+        // If the user has logged in successfully, bring them back to the login screen with current user details.
+        // If the user did not log in successfully, bring them back to the login screen to let them login.
+        viewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
+            when (authenticationState) {
+                LoginViewModel.AuthenticationState.AUTHENTICATED -> {
+                    cachedCredentials = viewModel.getCredentials()
+                    cachedUserProfile = viewModel.getUserProfile()
+                    //showSnackBar("Already authenticated")
+                    updateUI()
+                    showUserProfile()
+                }
+                else -> Log.e(
+                    "LoginFragment",
+                    "Authentication state that doesn't require any UI change $authenticationState"
+                )
+            }
+        })
     }
 
     override fun onCreateView(
@@ -89,10 +110,6 @@ class LoginFragment : Fragment() {
             "Name: ${cachedUserProfile?.name ?: ""}\n" +
                     "ID: ${cachedUserProfile?.getId() ?: ""}\n" +
                     "Email: ${cachedUserProfile?.email ?: ""}"
-
-        if (cachedUserProfile == null) {
-            fragmentLoginBinding.inputEditMetadata.setText("")
-        }
     }
 
     private fun loginWithBrowser() {
@@ -100,7 +117,7 @@ class LoginFragment : Fragment() {
         WebAuthProvider.login(account)
             .withScheme(getString(R.string.com_auth0_scheme))
             .withScope(getString(R.string.com_auth0_scope))
-            .withAudience("https://${getString(R.string.com_auth0_domain)}/api/v2/")
+            .withAudience(getString(R.string.com_auth0_audience))
 
             // Launch the authentication passing the callback where the results will be received
             .start(requireContext(), object : Callback<Credentials, AuthenticationException> {
@@ -110,6 +127,8 @@ class LoginFragment : Fragment() {
 
                 override fun onSuccess(credentials: Credentials) {
                     cachedCredentials = credentials
+                    viewModel.setCredentials(cachedCredentials)
+                    viewModel.setAuthenticationState(LoginViewModel.AuthenticationState.AUTHENTICATED)
                     showSnackBar("Success: ${credentials.accessToken}")
                     updateUI()
                     showUserProfile()
@@ -125,10 +144,14 @@ class LoginFragment : Fragment() {
                     // The user has been logged out!
                     cachedCredentials = null
                     cachedUserProfile = null
+                    viewModel.setCredentials(cachedCredentials)
+                    viewModel.setUserProfile(cachedUserProfile)
+                    viewModel.setAuthenticationState(LoginViewModel.AuthenticationState.UNAUTHENTICATED)
                     updateUI()
                 }
 
                 override fun onFailure(exception: AuthenticationException) {
+                    viewModel.setAuthenticationState(LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION)
                     updateUI()
                     showSnackBar("Failure: ${exception.getCode()}")
                 }
@@ -149,46 +172,6 @@ class LoginFragment : Fragment() {
                 override fun onSuccess(profile: UserProfile) {
                     cachedUserProfile = profile;
                     updateUI()
-                }
-            })
-    }
-
-    private fun getUserMetadata() {
-        // Create the user API client
-        val usersClient = UsersAPIClient(account, cachedCredentials!!.accessToken!!)
-
-        // Get the full user profile
-        usersClient.getProfile(cachedUserProfile!!.getId()!!)
-            .start(object : Callback<UserProfile, ManagementException> {
-                override fun onFailure(exception: ManagementException) {
-                    showSnackBar("Failure: ${exception.getCode()}")
-                }
-
-                override fun onSuccess(userProfile: UserProfile) {
-                    cachedUserProfile = userProfile;
-                    updateUI()
-
-                    val country = userProfile.getUserMetadata()["country"] as String?
-                    fragmentLoginBinding.inputEditMetadata.setText(country)
-                }
-            })
-    }
-
-    private fun patchUserMetadata() {
-        val usersClient = UsersAPIClient(account, cachedCredentials!!.accessToken!!)
-        val metadata = mapOf("country" to fragmentLoginBinding.inputEditMetadata.text.toString())
-
-        usersClient
-            .updateMetadata(cachedUserProfile!!.getId()!!, metadata)
-            .start(object : Callback<UserProfile, ManagementException> {
-                override fun onFailure(exception: ManagementException) {
-                    showSnackBar("Failure: ${exception.getCode()}")
-                }
-
-                override fun onSuccess(profile: UserProfile) {
-                    cachedUserProfile = profile
-                    updateUI()
-                    showSnackBar("Successful")
                 }
             })
     }

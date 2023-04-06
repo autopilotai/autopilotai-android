@@ -3,24 +3,30 @@ package org.autopilotai.objectdetection.fragments
 import android.Manifest
 import android.os.Build
 import android.os.Bundle
+import android.os.StrictMode
 import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.Navigation
 import com.ifttt.connect.ui.ConnectButton
 import com.ifttt.connect.ui.ConnectResult
 import com.ifttt.connect.ui.CredentialsProvider
 import com.ifttt.location.ConnectLocation
 import com.squareup.picasso.Picasso
+import org.autopilotai.objectdetection.LoginViewModel
 import org.autopilotai.objectdetection.R
 import org.autopilotai.objectdetection.databinding.FragmentIntegrationsBinding
 import org.autopilotai.objectdetection.iftttconnecter.ApiHelper.REDIRECT_URI
+import org.autopilotai.objectdetection.iftttconnecter.AutopilotAIApiHelper
 import org.autopilotai.objectdetection.iftttconnecter.EmailPreferencesHelper
 import org.autopilotai.objectdetection.iftttconnecter.FeatureView
 import org.autopilotai.objectdetection.iftttconnecter.LocationForegroundService
 import org.autopilotai.objectdetection.iftttconnecter.UiHelper.allPermissionsGranted
 import org.autopilotai.objectdetection.iftttconnecter.UiHelper.appSettingsIntent
+import java.util.*
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -37,6 +43,9 @@ class IntegrationsFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+
+    // Get a reference to the ViewModel scoped to this Fragment
+    private val viewModel: LoginViewModel by activityViewModels()
 
     private lateinit var listView: ListView
 
@@ -221,38 +230,56 @@ class IntegrationsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val policy = StrictMode.ThreadPolicy.Builder()
+            .permitAll().build()
+        StrictMode.setThreadPolicy(policy)
+
+        if (viewModel.getUserToken() == null) {
+            val userInfo = AutopilotAIApiHelper.UserInfo(
+                user_id = viewModel.getCredentials()?.user?.getId(),
+            )
+            val userToken = AutopilotAIApiHelper.getIFTTTUserToken(userInfo)
+            viewModel.setUserToken(userToken)
+        }
+
         connectButton = fragmentIntegrationsBinding.connectButton
         features = fragmentIntegrationsBinding.features
         skipConnectionConfiguration = false;
         credentialsProvider = object : CredentialsProvider {
-            override fun getOAuthCode(): String {
+            override fun getOAuthCode(): String? {
                 // Your user's OAuth code, this will be used to authenticate the user to IFTTT.
-                return "shaunaa126@gmail.com"
+                return viewModel.getUserProfile()?.email
             }
 
             override fun getUserToken(): String? {
-                return "m_EqS0kG01KAkJzWLm57W08DoUeU80XFOsEhs8JXm-cg6sIX"
+                return viewModel.getUserToken()
+                //return "m_EqS0kG01KAkJzWLm57W08DoUeU80XFOsEhs8JXm-cg6sIX"
             }
         }
 
         listView = fragmentIntegrationsBinding.connectionsList
-        val connections:Array<String> = resources.getStringArray(R.array.connections)
-        val connection_ids:Array<String> = resources.getStringArray(R.array.connection_ids)
+        val connections: Array<String> = resources.getStringArray(R.array.connections)
+        val connection_ids: Array<String> = resources.getStringArray(R.array.connection_ids)
 
         connectionId = connection_ids.first();
         setupForConnection();
 
-        val adapter = ArrayAdapter(requireActivity().applicationContext, android.R.layout.simple_list_item_1, connections)
+        val adapter = ArrayAdapter(
+            requireActivity().applicationContext,
+            android.R.layout.simple_list_item_1,
+            connections
+        )
         listView.adapter = adapter
 
-        listView.onItemClickListener = AdapterView.OnItemClickListener { adapterView, view, position, id ->
-            val selectedItem = adapterView.getItemAtPosition(position) as String
-            val itemIdAtPos = adapterView.getItemIdAtPosition(position)
-            connectionId = connection_ids[itemIdAtPos.toInt()];
+        listView.onItemClickListener =
+            AdapterView.OnItemClickListener { adapterView, view, position, id ->
+                val selectedItem = adapterView.getItemAtPosition(position) as String
+                val itemIdAtPos = adapterView.getItemIdAtPosition(position)
+                connectionId = connection_ids[itemIdAtPos.toInt()];
 
-            //Toast.makeText(requireActivity().applicationContext,"click item $selectedItem its position $itemIdAtPos",Toast.LENGTH_SHORT).show()
-            setupForConnection();
-        }
+                //Toast.makeText(requireActivity().applicationContext,"click item $selectedItem its position $itemIdAtPos",Toast.LENGTH_SHORT).show()
+                setupForConnection();
+            }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -275,6 +302,11 @@ class IntegrationsFragment : Fragment() {
         super.onResume()
         requireActivity().intent?.let {
             connectButton.setConnectResult(ConnectResult.fromIntent(it))
+        }
+
+        if (viewModel.getAuthenticationState() == LoginViewModel.AuthenticationState.UNAUTHENTICATED) {
+            Navigation.findNavController(requireActivity(), R.id.fragment_container)
+                .navigate(IntegrationsFragmentDirections.actionIntegrationsFragmentToLoginFragment())
         }
     }
 

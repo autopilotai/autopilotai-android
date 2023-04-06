@@ -63,46 +63,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/user_profile">
 
-            <TextView
-                android:id="@+id/text_heading_metadata"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:text="Metadata"/>
-
-            <TextView
-                android:id="@+id/text_info_metadata"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_margin="8dp"
-                android:textAlignment="center"
-                android:text="Use the buttons and text box below to patch the 'country' field from 'user_metadata'"
-                android:textSize="12sp" />
-
-            <EditText
-                android:id="@+id/input_edit_metadata"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center">
-                <Button
-                    android:id="@+id/button_get_metadata"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:text="Get"
-                    android:layout_marginRight="8dp"/>
-
-                <Button
-                    android:id="@+id/button_patch_metadata"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:text="Patch"
-                    android:layout_marginLeft="8dp"/>
-            </LinearLayout>
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
