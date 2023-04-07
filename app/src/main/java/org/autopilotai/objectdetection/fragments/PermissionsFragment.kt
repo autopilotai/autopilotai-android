@@ -96,7 +96,7 @@ class PermissionsFragment : Fragment() {
     private fun navigateToLogin() {
         lifecycleScope.launchWhenStarted {
             Navigation.findNavController(requireActivity(), R.id.fragment_container).navigate(
-                PermissionsFragmentDirections.actionPermissionsFragmentToLoginFragment())
+                R.id.login_fragment)
         }
     }
 

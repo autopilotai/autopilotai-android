@@ -5,10 +5,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
@@ -20,12 +20,10 @@ import com.google.android.material.snackbar.Snackbar
 import org.autopilotai.objectdetection.LoginViewModel
 import org.autopilotai.objectdetection.R
 import org.autopilotai.objectdetection.databinding.FragmentLoginBinding
+import androidx.navigation.fragment.findNavController
+import androidx.lifecycle.Observer
+import androidx.navigation.NavController
 
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
@@ -33,9 +31,8 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class LoginFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
+    private val TAG = "LoginFragment"
 
     private var _fragmentLoginBinding: FragmentLoginBinding? = null
 
@@ -49,25 +46,17 @@ class LoginFragment : Fragment() {
     // Get a reference to the ViewModel scoped to this Fragment
     private val viewModel: LoginViewModel by activityViewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var navController: NavController
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Set up the account object with the Auth0 application details
-        account = Auth0(
-            getString(R.string.com_auth0_client_id),
-            getString(R.string.com_auth0_domain)
-        )
+/*        navController = findNavController()
 
-        fragmentLoginBinding.buttonLogin.setOnClickListener { loginWithBrowser() }
-        fragmentLoginBinding.buttonLogout.setOnClickListener { logout() }
+        // If the user presses the back button, bring them back to the home screen.
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            navController.popBackStack(R.id.login_fragment, false)
+        }*/
 
         // Observe the authentication state so we can know if the user has logged in successfully.
         // If the user has logged in successfully, bring them back to the login screen with current user details.
@@ -87,6 +76,15 @@ class LoginFragment : Fragment() {
                 )
             }
         })
+
+        // Set up the account object with the Auth0 application details
+        account = Auth0(
+            getString(R.string.com_auth0_client_id),
+            getString(R.string.com_auth0_domain)
+        )
+
+        fragmentLoginBinding.buttonLogin.setOnClickListener { loginWithBrowser() }
+        fragmentLoginBinding.buttonLogout.setOnClickListener { logout() }
     }
 
     override fun onCreateView(
@@ -182,25 +180,5 @@ class LoginFragment : Fragment() {
             text,
             Snackbar.LENGTH_LONG
         ).show()
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment LoginFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            LoginFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
     }
 }

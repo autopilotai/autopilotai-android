@@ -10,67 +10,36 @@
     <fragment
         android:id="@+id/permissions_fragment"
         android:name="org.autopilotai.objectdetection.fragments.PermissionsFragment"
-        android:label="PermissionsFragment" >
-        <action
-            android:id="@+id/action_permissions_fragment_to_login_fragment"
-            app:destination="@id/login_fragment" />
-    </fragment>
+        android:label="PermissionsFragment" />
 
     <fragment
         android:id="@+id/camera_fragment"
         android:name="org.autopilotai.objectdetection.fragments.CameraFragment"
-        android:label="CameraFragment" >
-        <action
-            android:id="@+id/action_camera_fragment_to_login_fragment"
-            app:destination="@id/login_fragment" />
-    </fragment>
+        android:label="CameraFragment"
+        tools:layout="@layout/fragment_camera" />
 
     <fragment
         android:id="@+id/training_fragment"
         android:name="org.autopilotai.objectdetection.fragments.TrainingFragment"
         android:label="TrainingFragment"
-        tools:layout="@layout/fragment_training" >
-        <action
-            android:id="@+id/action_training_fragment_to_login_fragment"
-            app:destination="@id/login_fragment" />
-    </fragment>
+        tools:layout="@layout/fragment_training" />
 
     <fragment
         android:id="@+id/integrations_fragment"
         android:name="org.autopilotai.objectdetection.fragments.IntegrationsFragment"
         android:label="IntegrationsFragment"
-        tools:layout="@layout/fragment_integrations" >
-        <action
-            android:id="@+id/action_integrations_fragment_to_login_fragment"
-            app:destination="@id/login_fragment" />
-    </fragment>
+        tools:layout="@layout/fragment_integrations" />
 
     <fragment
         android:id="@+id/settings_fragment"
         android:name="org.autopilotai.objectdetection.fragments.SettingFragment"
         android:label="SettingsFragment"
-        tools:layout="@layout/fragment_setting" >
-        <action
-            android:id="@+id/action_settings_fragment_to_login_fragment"
-            app:destination="@id/login_fragment" />
-    </fragment>
+        tools:layout="@layout/fragment_setting" />
 
     <fragment
         android:id="@+id/login_fragment"
         android:name="org.autopilotai.objectdetection.fragments.LoginFragment"
         android:label="LoginFragment"
         tools:layout="@layout/fragment_login" >
-        <action
-            android:id="@+id/action_login_fragment_to_camera_fragment"
-            app:destination="@id/camera_fragment" />
-        <action
-            android:id="@+id/action_login_fragment_to_training_fragment"
-            app:destination="@id/training_fragment" />
-        <action
-            android:id="@+id/action_login_fragment_to_integrations_fragment"
-            app:destination="@id/integrations_fragment" />
-        <action
-            android:id="@+id/action_login_fragment_to_settings_fragment"
-            app:destination="@id/settings_fragment" />
     </fragment>
 </navigation>
