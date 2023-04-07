@@ -99,7 +99,7 @@
     <string name="tv_collect_sample">Collect sample</string>
     <string name="tv_icon_helper">\?</string>
 
-    // IFTTT
+    <!-- IFTTT -->
     <string name="user_id_hint">User id</string>
     <string name="email_hint">Email</string>
     <string name="start">Start</string>
@@ -128,7 +128,23 @@
         <item>Connect Gmail</item>
     </string-array>
     <string-array name="connection_ids">
-        <item>itza689S</item>
-        <item>sGr5xMti</item>
+        <item>Xe8bDWBF</item>
+        <item>M2paEBUX</item>
     </string-array>
+
+    <!-- Auth0 Configuration -->
+    <string name="com_auth0_domain">"dev-8smh4pafwr18iywh.us.auth0.com"</string>
+    <string name="com_auth0_client_id">"0tZaRYINFQhg0ina63nfSxYBtjnGbYoO"</string>
+    <string name="com_auth0_scheme">demo</string>
+    <string name="com_auth0_audience">nuistics-service-api</string> <!-- https://dev-8smh4pafwr18iywh.us.auth0.com/api/v2/ nuistics-service-api-->
+    <string name="com_auth0_scope">openid profile email offline_access ifttt read:current_user update:current_user_metadata</string>
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome!"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
 </resources>

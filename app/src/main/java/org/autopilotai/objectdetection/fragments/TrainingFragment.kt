@@ -41,7 +41,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.Navigation
+import org.autopilotai.objectdetection.LoginViewModel
 import org.autopilotai.objectdetection.MainViewModel
 import org.autopilotai.objectdetection.R
 import org.autopilotai.objectdetection.TransferLearningHelper
@@ -55,12 +55,14 @@ import java.util.Locale
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import androidx.navigation.fragment.findNavController
+import androidx.lifecycle.Observer
 
 class TrainingFragment : Fragment(),
     TransferLearningHelper.ClassifierListener {
 
     companion object {
-        private const val TAG = "Model Personalization"
+        private const val TAG = "Training Fragment"
         private const val LONG_PRESS_DURATION = 500
         private const val SAMPLE_COLLECTION_DELAY = 300
     }
@@ -86,6 +88,8 @@ class TrainingFragment : Fragment(),
     // that class will be added to this queue. It is later extracted by
     // InferenceThread and processed.
     private val addSampleRequests = ConcurrentLinkedQueue<String>()
+
+    private val viewModel2: LoginViewModel by activityViewModels()
 
     private var sampleCollectionButtonPressedTime: Long = 0
     private var isCollectingSamples = false
@@ -127,17 +131,6 @@ class TrainingFragment : Fragment(),
             true
         }
 
-    override fun onResume() {
-        super.onResume()
-
-        if (!PermissionsFragment.hasPermissions(requireContext())) {
-            Navigation.findNavController(
-                requireActivity(),
-                R.id.fragment_container
-            ).navigate(CameraFragmentDirections.actionCameraToPermissions())
-        }
-    }
-
     override fun onDestroyView() {
         _fragmentCameraBinding = null
         super.onDestroyView()
@@ -160,6 +153,26 @@ class TrainingFragment : Fragment(),
     @SuppressLint("MissingPermission", "ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+/*        if (viewModel2.getAuthenticationState() == LoginViewModel.AuthenticationState.UNAUTHENTICATED) {
+            Navigation.findNavController(requireActivity(), R.id.fragment_container)
+                .navigate(TrainingFragmentDirections.actionTrainingFragmentToLoginFragment())
+        }*/
+
+/*        val navController = findNavController()
+        viewModel2.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
+            when (authenticationState) {
+                LoginViewModel.AuthenticationState.AUTHENTICATED -> Log.i(TAG, "Authenticated")
+                // If the user is not logged in, they should not be able to set any preferences,
+                // so navigate them to the login fragment
+                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> navController.navigate(
+                    R.id.login_fragment
+                )
+                else -> Log.e(
+                    TAG, "New $authenticationState state that doesn't require any UI change"
+                )
+            }
+        })*/
 
         transferLearningHelper = TransferLearningHelper(
             context = requireContext(),

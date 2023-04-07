@@ -3,30 +3,32 @@ package org.autopilotai.objectdetection.fragments
 import android.Manifest
 import android.os.Build
 import android.os.Bundle
+import android.os.StrictMode
+import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.ifttt.connect.ui.ConnectButton
 import com.ifttt.connect.ui.ConnectResult
 import com.ifttt.connect.ui.CredentialsProvider
 import com.ifttt.location.ConnectLocation
 import com.squareup.picasso.Picasso
+import org.autopilotai.objectdetection.LoginViewModel
 import org.autopilotai.objectdetection.R
 import org.autopilotai.objectdetection.databinding.FragmentIntegrationsBinding
 import org.autopilotai.objectdetection.iftttconnecter.ApiHelper.REDIRECT_URI
+import org.autopilotai.objectdetection.iftttconnecter.AutopilotAIApiHelper
 import org.autopilotai.objectdetection.iftttconnecter.EmailPreferencesHelper
 import org.autopilotai.objectdetection.iftttconnecter.FeatureView
 import org.autopilotai.objectdetection.iftttconnecter.LocationForegroundService
 import org.autopilotai.objectdetection.iftttconnecter.UiHelper.allPermissionsGranted
 import org.autopilotai.objectdetection.iftttconnecter.UiHelper.appSettingsIntent
-
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+import java.util.*
+import androidx.navigation.fragment.findNavController
+import androidx.lifecycle.Observer
 
 /**
  * A simple [Fragment] subclass.
@@ -34,9 +36,8 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class IntegrationsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
+    private val TAG = "IntegrationsFragment"
 
     private lateinit var listView: ListView
 
@@ -52,6 +53,9 @@ class IntegrationsFragment : Fragment() {
     private lateinit var connectButton: ConnectButton
     private lateinit var toolbar: Toolbar
     private lateinit var features: LinearLayout
+
+    // Get a reference to the ViewModel scoped to this Fragment
+    private val viewModel: LoginViewModel by activityViewModels()
 
     // User preference on skip configuration flag from the menu.
     private var skipConnectionConfiguration: Boolean = false
@@ -115,7 +119,7 @@ class IntegrationsFragment : Fragment() {
     Demonstrate setting up a connection.
      */
     private fun setupForConnection() {
-        val suggestedEmail = "shaunaa126@gmail.com" //emailPreferencesHelper.getEmail() ?: IntegrationsFragment.EMAIL
+        val suggestedEmail = viewModel.getUserProfile()?.email ?: IntegrationsFragment.EMAIL
         val configurationBuilder = ConnectButton.Configuration.newBuilder(suggestedEmail, REDIRECT_URI)
             .withConnectionId(connectionId)
             .withCredentialProvider(credentialsProvider)
@@ -221,46 +225,75 @@ class IntegrationsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+/*        if (viewModel.getAuthenticationState() == LoginViewModel.AuthenticationState.UNAUTHENTICATED) {
+            Navigation.findNavController(requireActivity(), R.id.fragment_container)
+                .navigate(IntegrationsFragmentDirections.actionIntegrationsFragmentToLoginFragment())
+        }*/
+
+/*        val navController = findNavController()
+        viewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
+            when (authenticationState) {
+                LoginViewModel.AuthenticationState.AUTHENTICATED -> Log.i(TAG, "Authenticated")
+                // If the user is not logged in, they should not be able to set any preferences,
+                // so navigate them to the login fragment
+                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> navController.navigate(
+                    R.id.login_fragment
+                )
+                else -> Log.e(
+                    TAG, "New $authenticationState state that doesn't require any UI change"
+                )
+            }
+        })*/
+
+        val policy = StrictMode.ThreadPolicy.Builder()
+            .permitAll().build()
+        StrictMode.setThreadPolicy(policy)
+
+        if (viewModel.getUserToken() == null) {
+            val userInfo = AutopilotAIApiHelper.UserInfo(
+                user_id = viewModel.getCredentials()?.user?.getId(),
+            )
+            val userToken = AutopilotAIApiHelper.getIFTTTUserToken(userInfo)
+            viewModel.setUserToken(userToken)
+        }
+
         connectButton = fragmentIntegrationsBinding.connectButton
         features = fragmentIntegrationsBinding.features
         skipConnectionConfiguration = false;
         credentialsProvider = object : CredentialsProvider {
-            override fun getOAuthCode(): String {
+            override fun getOAuthCode(): String? {
                 // Your user's OAuth code, this will be used to authenticate the user to IFTTT.
-                return "shaunaa126@gmail.com"
+                return viewModel.getUserProfile()?.email
             }
 
             override fun getUserToken(): String? {
-                return "m_EqS0kG01KAkJzWLm57W08DoUeU80XFOsEhs8JXm-cg6sIX"
+                return viewModel.getUserToken()
             }
         }
 
         listView = fragmentIntegrationsBinding.connectionsList
-        val connections:Array<String> = resources.getStringArray(R.array.connections)
-        val connection_ids:Array<String> = resources.getStringArray(R.array.connection_ids)
+        val connections: Array<String> = resources.getStringArray(R.array.connections)
+        val connection_ids: Array<String> = resources.getStringArray(R.array.connection_ids)
 
         connectionId = connection_ids.first();
         setupForConnection();
 
-        val adapter = ArrayAdapter(requireActivity().applicationContext, android.R.layout.simple_list_item_1, connections)
+        val adapter = ArrayAdapter(
+            requireActivity().applicationContext,
+            android.R.layout.simple_list_item_1,
+            connections
+        )
         listView.adapter = adapter
 
-        listView.onItemClickListener = AdapterView.OnItemClickListener { adapterView, view, position, id ->
-            val selectedItem = adapterView.getItemAtPosition(position) as String
-            val itemIdAtPos = adapterView.getItemIdAtPosition(position)
-            connectionId = connection_ids[itemIdAtPos.toInt()];
+        listView.onItemClickListener =
+            AdapterView.OnItemClickListener { adapterView, view, position, id ->
+                val selectedItem = adapterView.getItemAtPosition(position) as String
+                val itemIdAtPos = adapterView.getItemIdAtPosition(position)
+                connectionId = connection_ids[itemIdAtPos.toInt()];
 
-            //Toast.makeText(requireActivity().applicationContext,"click item $selectedItem its position $itemIdAtPos",Toast.LENGTH_SHORT).show()
-            setupForConnection();
-        }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+                //Toast.makeText(requireActivity().applicationContext,"click item $selectedItem its position $itemIdAtPos",Toast.LENGTH_SHORT).show()
+                setupForConnection();
+            }
     }
 
     override fun onCreateView(
@@ -286,27 +319,8 @@ class IntegrationsFragment : Fragment() {
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment IntegrationFragment.
-         */
-
         private const val EMAIL = "user@email.com"
         private const val KEY_CONNECTION_ID = "key_connection_id"
         private const val KEY_SKIP_CONFIG = "key_skip_config"
-
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            IntegrationsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
     }
 }

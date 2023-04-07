@@ -32,7 +32,8 @@ import androidx.camera.core.ImageAnalysis.OUTPUT_IMAGE_FORMAT_RGBA_8888
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
+import androidx.fragment.app.activityViewModels
+import org.autopilotai.objectdetection.LoginViewModel
 import org.autopilotai.objectdetection.ObjectDetectorHelper
 import org.autopilotai.objectdetection.R
 import org.autopilotai.objectdetection.databinding.FragmentCameraBinding
@@ -41,11 +42,13 @@ import org.tensorflow.lite.task.vision.detector.Detection
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import androidx.navigation.fragment.findNavController
+import androidx.lifecycle.Observer
 
 
 class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
 
-    private val TAG = "ObjectDetection"
+    private val TAG = "CameraFragment"
 
     private var _fragmentCameraBinding: FragmentCameraBinding? = null
 
@@ -64,15 +67,7 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
     /** Blocking camera operations are performed using this executor */
     private lateinit var cameraExecutor: ExecutorService
 
-    override fun onResume() {
-        super.onResume()
-        // Make sure that all permissions are still present, since the
-        // user could have removed them while the app was in paused state.
-        if (!PermissionsFragment.hasPermissions(requireContext())) {
-            Navigation.findNavController(requireActivity(), R.id.fragment_container)
-                .navigate(CameraFragmentDirections.actionCameraToPermissions())
-        }
-    }
+    private val viewModel: LoginViewModel by activityViewModels()
 
     override fun onDestroyView() {
         _fragmentCameraBinding = null
@@ -95,6 +90,26 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
     @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+/*        if (viewModel.getAuthenticationState() == LoginViewModel.AuthenticationState.UNAUTHENTICATED) {
+            Navigation.findNavController(requireActivity(), R.id.fragment_container)
+                .navigate(CameraFragmentDirections.actionCameraFragmentToLoginFragment())
+        }*/
+
+/*        val navController = findNavController()
+        viewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
+            when (authenticationState) {
+                LoginViewModel.AuthenticationState.AUTHENTICATED -> Log.i(TAG, "Authenticated")
+                // If the user is not logged in, they should not be able to set any preferences,
+                // so navigate them to the login fragment
+                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> navController.navigate(
+                    R.id.login_fragment
+                )
+                else -> Log.e(
+                    TAG, "New $authenticationState state that doesn't require any UI change"
+                )
+            }
+        })*/
 
         val policy = ThreadPolicy.Builder()
             .permitAll().build()
