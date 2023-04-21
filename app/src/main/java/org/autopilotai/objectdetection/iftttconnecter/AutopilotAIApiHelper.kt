@@ -7,6 +7,7 @@ import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 import retrofit2.http.Body
+import retrofit2.http.Header
 import retrofit2.http.POST
 import java.io.IOException
 import java.util.UUID
@@ -45,13 +46,13 @@ object AutopilotAIApiHelper {
         }
     }
 
-    fun getIFTTTUserToken(userInfo: UserInfo): String? {
+    fun getIFTTTUserToken(token: String, userInfo: UserInfo): String? {
         if (userInfo == null) {
             return null
         }
 
         return try {
-            val response = autopilotAIApi.getIFTTTUserToken(userInfo).execute()
+            val response = autopilotAIApi.getIFTTTUserToken(token, userInfo).execute()
             if (response.isSuccessful) {
                 response.body()?.user_token
             } else {
@@ -67,7 +68,7 @@ object AutopilotAIApiHelper {
         fun sendImageDescription(@Body imageInfo: ImageInfo): Call<ImageInfo>
 
         @POST("/ifttt/v1/user_token")
-        fun getIFTTTUserToken(@Body userInfo: UserInfo): Call<Token>
+        fun getIFTTTUserToken(@Header("Authorization") token: String, @Body userInfo: UserInfo): Call<Token>
     }
 
     data class ImageInfo(

@@ -253,8 +253,9 @@ class IntegrationsFragment : Fragment() {
             val userInfo = AutopilotAIApiHelper.UserInfo(
                 user_id = viewModel.getCredentials()?.user?.getId(),
             )
-            val userToken = AutopilotAIApiHelper.getIFTTTUserToken(userInfo)
-            viewModel.setUserToken(userToken)
+            val userAuthToken = "Bearer " + viewModel.getCredentials()?.accessToken
+            val userIFTTTToken = AutopilotAIApiHelper.getIFTTTUserToken(userAuthToken, userInfo)
+            viewModel.setUserToken(userIFTTTToken)
         }
 
         connectButton = fragmentIntegrationsBinding.connectButton
