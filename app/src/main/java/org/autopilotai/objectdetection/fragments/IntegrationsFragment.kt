@@ -11,6 +11,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.ifttt.connect.ui.ConnectButton
 import com.ifttt.connect.ui.ConnectResult
 import com.ifttt.connect.ui.CredentialsProvider
@@ -27,8 +29,10 @@ import org.autopilotai.objectdetection.iftttconnecter.LocationForegroundService
 import org.autopilotai.objectdetection.iftttconnecter.UiHelper.allPermissionsGranted
 import org.autopilotai.objectdetection.iftttconnecter.UiHelper.appSettingsIntent
 import java.util.*
-import androidx.navigation.fragment.findNavController
-import androidx.lifecycle.Observer
+import org.autopilotai.objectdetection.iftttconnecter.OnLabelClickListener
+import org.autopilotai.objectdetection.iftttconnecter.LabelListAdapter
+import org.autopilotai.objectdetection.iftttconnecter.LabelModel
+import org.json.JSONArray
 
 /**
  * A simple [Fragment] subclass.
@@ -44,6 +48,39 @@ class IntegrationsFragment : Fragment() {
     private var _fragmentIntegrationsBinding: FragmentIntegrationsBinding? = null
     private val fragmentIntegrationsBinding
         get() = _fragmentIntegrationsBinding!!
+
+    /////////////////LABEL FORM
+    private lateinit var addLabel: Button
+    private lateinit var updateLabel: Button
+    private lateinit var labelName: EditText
+    private lateinit var labelList: RecyclerView
+    /**
+     * The adapter which we have prepared.
+     */
+    private lateinit var mLabelListAdapter: LabelListAdapter
+
+    /**
+     * To hold the reference to the items to be updated as a stack.
+     * We can just remove and get the item with [Stack] in one shot.
+     */
+    private var modelToBeUpdated: Stack<LabelModel> = Stack()
+    /**
+     * The listener which we have defined in [OnLabelClickListener]. Will be added to the adapter
+     * which constructing the adapter
+     */
+    private val mOnLabelClickListener = object : OnLabelClickListener {
+        override fun onUpdate(position: Int, model: LabelModel) {
+            // we want to update
+            modelToBeUpdated.add(model)
+
+            // set the value of the clicked item in the edit text
+            labelName.setText(model.name)
+        }
+
+        override fun onDelete(model: LabelModel) {
+            mLabelListAdapter.removeLabel(model)
+        }
+    }
 
     /////////////////IFTTT
     private lateinit var emailPreferencesHelper: EmailPreferencesHelper
@@ -222,6 +259,62 @@ class IntegrationsFragment : Fragment() {
 //    }
     ///////////////end IFTTT
 
+    /*
+    Display Image Labels per connection
+    */
+    private fun displayImageLabels() {
+        try {
+            if (connectButton.isEnabled) {
+                mLabelListAdapter.clearLabels()
+
+                val connInfo = AutopilotAIApiHelper.ConnectionInfo(
+                    user_id = viewModel.getCredentials()?.user?.getId(),
+                    connection_id = connectionId,
+                    image_labels = ""
+                )
+                val userAuthToken = "Bearer " + viewModel.getCredentials()?.accessToken
+                val response = JSONArray(AutopilotAIApiHelper.getImageLabels(userAuthToken, connInfo) ?: "[]")
+
+                (0 until response.length()).forEach {
+                    // prepare id on incremental basis
+                    val id = mLabelListAdapter.getNextItemId()
+                    val image = response[it].toString()
+
+                    // prepare model for use
+                    val model = LabelModel(id, image)
+
+                    // add model to the adapter
+                    mLabelListAdapter.addLabel(model)
+                }
+            }
+        } catch (exc: Exception) {
+            Log.e(TAG, "Getting Image Labels Failed", exc)
+        }
+    }
+
+    /*
+    Update Image Labels per connection
+    */
+    private fun updateImageLabels(): String {
+        try {
+            if (connectButton.isEnabled) {
+                val imageLabels = mLabelListAdapter.getList()
+
+                val connInfo = AutopilotAIApiHelper.ConnectionInfo(
+                    user_id = viewModel.getCredentials()?.user?.getId(),
+                    connection_id = connectionId,
+                    image_labels = imageLabels.toString()
+                )
+                val userAuthToken = "Bearer " + viewModel.getCredentials()?.accessToken
+                val response = AutopilotAIApiHelper.setImageLabels(userAuthToken, connInfo)
+                return response.toString()
+            }
+        } catch (exc: Exception) {
+            Log.e(TAG, "Setting Image Labels Failed", exc)
+        }
+        return "Nothing was sent to IFTTT"
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -253,8 +346,9 @@ class IntegrationsFragment : Fragment() {
             val userInfo = AutopilotAIApiHelper.UserInfo(
                 user_id = viewModel.getCredentials()?.user?.getId(),
             )
-            val userToken = AutopilotAIApiHelper.getIFTTTUserToken(userInfo)
-            viewModel.setUserToken(userToken)
+            val userAuthToken = "Bearer " + viewModel.getCredentials()?.accessToken
+            val userIFTTTToken = AutopilotAIApiHelper.getIFTTTUserToken(userAuthToken, userInfo)
+            viewModel.setUserToken(userIFTTTToken)
         }
 
         connectButton = fragmentIntegrationsBinding.connectButton
@@ -293,7 +387,59 @@ class IntegrationsFragment : Fragment() {
 
                 //Toast.makeText(requireActivity().applicationContext,"click item $selectedItem its position $itemIdAtPos",Toast.LENGTH_SHORT).show()
                 setupForConnection();
+
+                displayImageLabels();
             }
+
+        // initialize the recycler view
+        labelList = fragmentIntegrationsBinding.labelListRecyclerView
+        labelList.layoutManager = LinearLayoutManager(requireActivity().applicationContext)
+        labelList.setHasFixedSize(true)
+
+        mLabelListAdapter = LabelListAdapter(requireActivity().applicationContext, mOnLabelClickListener)
+        labelList.adapter = mLabelListAdapter
+
+        displayImageLabels();
+
+        labelName = fragmentIntegrationsBinding.labelName
+
+        updateLabel = fragmentIntegrationsBinding.updateLabel
+        updateLabel.setOnClickListener {
+            val msg = updateImageLabels()
+            Toast.makeText(requireActivity().applicationContext,msg,Toast.LENGTH_SHORT).show()
+        }
+
+        addLabel = fragmentIntegrationsBinding.addLabel
+        addLabel.setOnClickListener {
+
+            val name = labelName.text.toString()
+
+            if (name.isNotBlank() && modelToBeUpdated.isEmpty()) {
+
+                // prepare id on incremental basis
+                val id = mLabelListAdapter.getNextItemId()
+
+                // prepare model for use
+                val model = LabelModel(id, name)
+
+                // add model to the adapter
+                mLabelListAdapter.addLabel(model)
+
+                // reset the input
+                labelName.setText("")
+
+                Toast.makeText(requireActivity().applicationContext,"Added label",Toast.LENGTH_SHORT).show()
+            } else if (modelToBeUpdated.isNotEmpty()) {
+                val model = modelToBeUpdated.pop()
+                model.name = name
+                mLabelListAdapter.updateLabel(model)
+
+                // reset the input
+                labelName.setText("")
+
+                Toast.makeText(requireActivity().applicationContext,"Updated label",Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     override fun onCreateView(
