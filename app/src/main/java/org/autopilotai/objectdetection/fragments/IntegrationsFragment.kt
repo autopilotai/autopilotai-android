@@ -273,7 +273,7 @@ class IntegrationsFragment : Fragment() {
                     image_labels = ""
                 )
                 val userAuthToken = "Bearer " + viewModel.getCredentials()?.accessToken
-                val response = JSONArray(AutopilotAIApiHelper.getImageLabels(userAuthToken, connInfo))
+                val response = JSONArray(AutopilotAIApiHelper.getImageLabels(userAuthToken, connInfo) ?: "[]")
 
                 (0 until response.length()).forEach {
                     // prepare id on incremental basis
