@@ -152,4 +152,10 @@ dependencies {
 
     // Add the Auth0 Android SDK
     implementation 'com.auth0.android:auth0:2.+'
+
+    // Websocket Chat
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
+    implementation("com.squareup.okhttp3:okhttp:4.9.0")
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.10'
 }

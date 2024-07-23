@@ -31,9 +31,15 @@
         tools:layout="@layout/fragment_integrations" />
 
     <fragment
+        android:id="@+id/chat_fragment"
+        android:name="org.autopilotai.objectdetection.fragments.ChatFragment"
+        android:label="ChatFragment"
+        tools:layout="@layout/fragment_chat" />
+
+    <fragment
         android:id="@+id/settings_fragment"
         android:name="org.autopilotai.objectdetection.fragments.SettingFragment"
-        android:label="SettingsFragment"
+        android:label="SettingFragment"
         tools:layout="@layout/fragment_setting" />
 
     <fragment

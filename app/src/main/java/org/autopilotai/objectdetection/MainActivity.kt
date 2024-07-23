@@ -54,10 +54,14 @@ class MainActivity : AppCompatActivity() {
                     loadFragment(IntegrationsFragment())
                     true
                 }
-                R.id.settings -> {
-                    loadFragment(SettingFragment())
+                R.id.chat -> {
+                    loadFragment(ChatFragment())
                     true
                 }
+//                R.id.settings -> {
+//                    loadFragment(SettingFragment())
+//                    true
+//                }
                 R.id.login -> {
                     loadFragment(LoginFragment())
                     true
