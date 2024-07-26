@@ -88,7 +88,7 @@ class ChatFragment : Fragment() {
 
     private fun createRequest(): Request {
         //val websocketURL = "wss://${Constants.CLUSTER_ID}.piesocket.com/v3/1?api_key=${Constants.API_KEY}"
-        val websocketURL = "wss://e2fe-47-184-31-56.ngrok-free.app/message"
+        val websocketURL = "wss://webapp-autopilotai-api.azurewebsites.net/message"
 
         return Request.Builder()
             .url(websocketURL)
