@@ -11,10 +11,12 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.fragment.app.activityViewModels
 //import com.mrntlu.websocketguide.Constants
 import org.autopilotai.objectdetection.R
 import org.autopilotai.objectdetection.service.WebSocketListener
 import org.autopilotai.objectdetection.MainViewModel
+import org.autopilotai.objectdetection.LoginViewModel
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.WebSocket
@@ -27,6 +29,7 @@ class ChatFragment : Fragment() {
     }
 
     private lateinit var viewModel: MainViewModel
+    private val viewLoginModel: LoginViewModel by activityViewModels()
 
     private lateinit var webSocketListener: WebSocketListener
     private val okHttpClient = OkHttpClient()
@@ -87,8 +90,8 @@ class ChatFragment : Fragment() {
     }
 
     private fun createRequest(): Request {
-        //val websocketURL = "wss://${Constants.CLUSTER_ID}.piesocket.com/v3/1?api_key=${Constants.API_KEY}"
-        val websocketURL = "wss://webapp-autopilotai-api.azurewebsites.net/message"
+        val accessToken = viewLoginModel.getCredentials()?.accessToken
+        val websocketURL = "wss://webapp-autopilotai-api.azurewebsites.net/message?access_token=${accessToken}"
 
         return Request.Builder()
             .url(websocketURL)
