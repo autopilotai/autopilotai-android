@@ -1,9 +1,9 @@
 package org.autopilotai.objectdetection.fragments
 
-import androidx.lifecycle.ViewModelProvider
+//import com.mrntlu.websocketguide.Constants
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import android.util.Pair
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,15 +11,17 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-//import com.mrntlu.websocketguide.Constants
-import org.autopilotai.objectdetection.R
-import org.autopilotai.objectdetection.service.WebSocketListener
-import org.autopilotai.objectdetection.MainViewModel
-import org.autopilotai.objectdetection.LoginViewModel
+import androidx.lifecycle.ViewModelProvider
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.WebSocket
+import org.autopilotai.objectdetection.LoginViewModel
+import org.autopilotai.objectdetection.MainViewModel
+import org.autopilotai.objectdetection.R
+import org.autopilotai.objectdetection.service.WebSocketListener
+
 
 //https://itnext.io/websockets-in-android-with-okhttp-and-viewmodel-776a9eed67b5
 class ChatFragment : Fragment() {
@@ -57,6 +59,8 @@ class ChatFragment : Fragment() {
         val disconnectButton = view.findViewById<Button>(R.id.disconnectButton)
         val statusTV = view.findViewById<TextView>(R.id.statusTV)
         val messageTV = view.findViewById<TextView>(R.id.messageTV)
+
+        messageTV.movementMethod = ScrollingMovementMethod()
 
         viewModel.socketStatus.observe(viewLifecycleOwner) {
             statusTV.text = if (it) "Connected" else "Disconnected"
