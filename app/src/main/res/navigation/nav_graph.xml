@@ -5,7 +5,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/permissions_fragment">
+    app:startDestination="@id/chat_fragment">
+
+    <action android:id="@+id/action_pop_out"
+        app:popUpTo="@id/chat_fragment"
+        app:popUpToInclusive="true" />
 
     <fragment
         android:id="@+id/permissions_fragment"
@@ -16,7 +20,12 @@
         android:id="@+id/camera_fragment"
         android:name="org.autopilotai.objectdetection.fragments.CameraFragment"
         android:label="CameraFragment"
-        tools:layout="@layout/fragment_camera" />
+        tools:layout="@layout/fragment_camera" >
+
+        <action
+            android:id="@+id/action_camera_to_login"
+            app:destination="@id/login_fragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/training_fragment"
@@ -34,7 +43,12 @@
         android:id="@+id/chat_fragment"
         android:name="org.autopilotai.objectdetection.fragments.ChatFragment"
         android:label="ChatFragment"
-        tools:layout="@layout/fragment_chat" />
+        tools:layout="@layout/fragment_chat" >
+
+        <action
+            android:id="@+id/action_chat_to_camera2"
+            app:destination="@id/camera_fragment2" />
+    </fragment>
 
     <fragment
         android:id="@+id/settings_fragment"
@@ -47,5 +61,42 @@
         android:name="org.autopilotai.objectdetection.fragments.LoginFragment"
         android:label="LoginFragment"
         tools:layout="@layout/fragment_login" >
+    </fragment>
+
+    <fragment
+        android:id="@+id/camera_fragment2"
+        android:name="org.autopilotai.objectdetection.fragments.CameraFragment2"
+        android:label="CameraFragment2" >
+
+        <action
+            android:id="@+id/action_camera_to_gallery"
+            app:destination="@id/gallery_fragment" />
+
+        <action
+            android:id="@+id/action_camera_to_permissions"
+            app:destination="@id/permissions_fragment"
+            app:popUpTo="@id/camera_fragment2"
+            app:popUpToInclusive="true"/>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/gallery_fragment"
+        android:name="org.autopilotai.objectdetection.fragments.GalleryFragment"
+        android:label="GalleryFragment" >
+        <argument
+            android:name="root_directory"
+            app:argType="string" />
+
+        <action
+            android:id="@+id/action_gallery_to_chat"
+            app:destination="@id/chat_fragment">
+            <argument
+                android:name="imageResId"
+                app:argType="integer" />
+            <argument
+                android:name="message"
+                app:argType="string" />
+        </action>
     </fragment>
 </navigation>

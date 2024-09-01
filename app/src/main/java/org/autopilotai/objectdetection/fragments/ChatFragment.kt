@@ -1,6 +1,5 @@
 package org.autopilotai.objectdetection.fragments
 
-//import com.mrntlu.websocketguide.Constants
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.util.Pair
@@ -14,6 +13,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.WebSocket
@@ -59,6 +59,15 @@ class ChatFragment : Fragment() {
         val disconnectButton = view.findViewById<Button>(R.id.disconnectButton)
         val statusTV = view.findViewById<TextView>(R.id.statusTV)
         val messageTV = view.findViewById<TextView>(R.id.messageTV)
+        val imageButton = view.findViewById<ImageButton>(R.id.imageButton)
+
+        // If request comes from Gallery Fragment
+        val imageResId = arguments?.getInt("imageResId") ?: 0
+        val message = arguments?.getString("message") ?: ""
+        if (message != "") {
+            messageTV.text = message
+            sendImgText(message)
+        }
 
         messageTV.movementMethod = ScrollingMovementMethod()
 
@@ -91,6 +100,10 @@ class ChatFragment : Fragment() {
             webSocket?.send(messageET.text.toString())
             viewModel.addMessage(Pair(true, messageET.text.toString()))
         }
+
+        imageButton.setOnClickListener {
+            findNavController().navigate(ChatFragmentDirections.actionChatToCamera2())
+        }
     }
 
     private fun createRequest(): Request {
@@ -105,5 +118,11 @@ class ChatFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         okHttpClient.dispatcher.executorService.shutdown()
+    }
+
+    private fun sendImgText(message: String) {
+        webSocket = okHttpClient.newWebSocket(createRequest(), webSocketListener)
+        webSocket!!.send(message)
+        viewModel.addMessage(Pair(true, message))
     }
 }

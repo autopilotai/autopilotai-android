@@ -55,8 +55,6 @@ import java.util.Locale
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import androidx.navigation.fragment.findNavController
-import androidx.lifecycle.Observer
 
 class TrainingFragment : Fragment(),
     TransferLearningHelper.ClassifierListener {
@@ -153,26 +151,6 @@ class TrainingFragment : Fragment(),
     @SuppressLint("MissingPermission", "ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-/*        if (viewModel2.getAuthenticationState() == LoginViewModel.AuthenticationState.UNAUTHENTICATED) {
-            Navigation.findNavController(requireActivity(), R.id.fragment_container)
-                .navigate(TrainingFragmentDirections.actionTrainingFragmentToLoginFragment())
-        }*/
-
-/*        val navController = findNavController()
-        viewModel2.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
-            when (authenticationState) {
-                LoginViewModel.AuthenticationState.AUTHENTICATED -> Log.i(TAG, "Authenticated")
-                // If the user is not logged in, they should not be able to set any preferences,
-                // so navigate them to the login fragment
-                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> navController.navigate(
-                    R.id.login_fragment
-                )
-                else -> Log.e(
-                    TAG, "New $authenticationState state that doesn't require any UI change"
-                )
-            }
-        })*/
 
         transferLearningHelper = TransferLearningHelper(
             context = requireContext(),

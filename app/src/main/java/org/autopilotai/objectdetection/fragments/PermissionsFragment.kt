@@ -19,6 +19,7 @@ package org.autopilotai.objectdetection.fragments
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -28,7 +29,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import org.autopilotai.objectdetection.R
 
-private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA, Manifest.permission.INTERNET, Manifest.permission.FOREGROUND_SERVICE)
+private var PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA, Manifest.permission.INTERNET, Manifest.permission.FOREGROUND_SERVICE)
 
 /**
  * The sole purpose of this fragment is to request permissions and, once granted, display the
@@ -37,61 +38,38 @@ private val PERMISSIONS_REQUIRED = arrayOf(Manifest.permission.CAMERA, Manifest.
 class PermissionsFragment : Fragment() {
 
     private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()
-        ) { isGranted: Boolean ->
-            if (isGranted) {
-                Toast.makeText(context, "Permission request granted", Toast.LENGTH_LONG).show()
-                //navigateToCamera()
-                navigateToLogin()
-            } else {
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions())
+        { permissions ->
+            // Handle Permission granted/rejected
+            var permissionGranted = true
+            permissions.entries.forEach {
+                if (it.key in PERMISSIONS_REQUIRED && it.value == false)
+                    permissionGranted = false
+            }
+            if (!permissionGranted) {
                 Toast.makeText(context, "Permission request denied", Toast.LENGTH_LONG).show()
+            } else {
+                navigateToLogin()
             }
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        when {
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.INTERNET
-            ) != PackageManager.PERMISSION_GRANTED -> {
-                requestPermissionLauncher.launch(
-                    Manifest.permission.INTERNET)
-            }
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.FOREGROUND_SERVICE
-            ) != PackageManager.PERMISSION_GRANTED -> {
-                requestPermissionLauncher.launch(
-                    Manifest.permission.FOREGROUND_SERVICE)
-            }
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED -> {
-                requestPermissionLauncher.launch(
-                    Manifest.permission.ACCESS_FINE_LOCATION)
-            }
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                //navigateToCamera()
-                navigateToLogin()
-            }
-            else -> {
-                requestPermissionLauncher.launch(
-                    Manifest.permission.CAMERA)
-            }
+
+        // add the storage access permission request for Android 9 and below.
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+            val permissionList = PERMISSIONS_REQUIRED.toMutableList()
+            permissionList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            PERMISSIONS_REQUIRED = permissionList.toTypedArray()
+        }
+
+        if (!hasPermissions(requireContext())) {
+            // Request camera-related permissions
+            requestPermissionLauncher.launch(PERMISSIONS_REQUIRED)
+        } else {
+            navigateToLogin()
         }
     }
-
-/*    private fun navigateToCamera() {
-        lifecycleScope.launchWhenStarted {
-            Navigation.findNavController(requireActivity(), R.id.fragment_container).navigate(
-                PermissionsFragmentDirections.actionPermissionsToCamera())
-        }
-    }*/
 
     private fun navigateToLogin() {
         lifecycleScope.launchWhenStarted {

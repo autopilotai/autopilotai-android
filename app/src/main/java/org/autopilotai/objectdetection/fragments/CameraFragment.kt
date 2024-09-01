@@ -35,15 +35,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import org.autopilotai.objectdetection.LoginViewModel
 import org.autopilotai.objectdetection.ObjectDetectorHelper
-import org.autopilotai.objectdetection.R
 import org.autopilotai.objectdetection.databinding.FragmentCameraBinding
 import org.autopilotai.objectdetection.iftttconnecter.AutopilotAIApiHelper
 import org.tensorflow.lite.task.vision.detector.Detection
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import androidx.navigation.fragment.findNavController
-import androidx.lifecycle.Observer
 
 
 class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
@@ -90,26 +87,6 @@ class CameraFragment : Fragment(), ObjectDetectorHelper.DetectorListener {
     @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-/*        if (viewModel.getAuthenticationState() == LoginViewModel.AuthenticationState.UNAUTHENTICATED) {
-            Navigation.findNavController(requireActivity(), R.id.fragment_container)
-                .navigate(CameraFragmentDirections.actionCameraFragmentToLoginFragment())
-        }*/
-
-/*        val navController = findNavController()
-        viewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
-            when (authenticationState) {
-                LoginViewModel.AuthenticationState.AUTHENTICATED -> Log.i(TAG, "Authenticated")
-                // If the user is not logged in, they should not be able to set any preferences,
-                // so navigate them to the login fragment
-                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> navController.navigate(
-                    R.id.login_fragment
-                )
-                else -> Log.e(
-                    TAG, "New $authenticationState state that doesn't require any UI change"
-                )
-            }
-        })*/
 
         val policy = ThreadPolicy.Builder()
             .permitAll().build()
