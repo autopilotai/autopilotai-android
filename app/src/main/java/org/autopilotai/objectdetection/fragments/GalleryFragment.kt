@@ -20,7 +20,7 @@ import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,6 +42,7 @@ import org.autopilotai.objectdetection.utils.showImmersive
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
 import java.io.File
+import java.io.FileInputStream
 
 /** Fragment used to present the user with a gallery of photos taken */
 class GalleryFragment internal constructor() : Fragment() {
@@ -137,13 +138,21 @@ class GalleryFragment internal constructor() : Fragment() {
                     val filePath = mediaStoreFile.file.absolutePath
 
                     // Convert the file path to a URI
-                    val fileUri = Uri.fromFile(File(filePath))
+                    val imageUri = Uri.fromFile(File(filePath)).toString()
 
-                    // Pass the URI to the imageResId variable
-                    val imageResId = fileUri.toString()
+                    // Read the file into a byte array
+                    val file = File(filePath)
+                    val fileInputStream = FileInputStream(file)
+                    val bytes = ByteArray(file.length().toInt())
+                    fileInputStream.read(bytes)
+                    fileInputStream.close()
+
+                    // Encode the byte array to a Base64 string
+                    val base64image = Base64.encodeToString(bytes, Base64.DEFAULT)
+
 
                     // Navigate to ChatFragment with the retrieved data
-                    findNavController().navigate(GalleryFragmentDirections.actionGalleryToChat(imageResId, message))
+                    findNavController().navigate(GalleryFragmentDirections.actionGalleryToChat(base64image, imageUri, message))
                 }
         }
 

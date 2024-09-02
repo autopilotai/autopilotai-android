@@ -92,7 +92,10 @@
             android:id="@+id/action_gallery_to_chat"
             app:destination="@id/chat_fragment">
             <argument
-                android:name="imageResId"
+                android:name="image"
+                app:argType="string" />
+            <argument
+                android:name="imageUri"
                 app:argType="string" />
             <argument
                 android:name="message"

@@ -64,11 +64,12 @@ class ChatFragment : Fragment() {
         val imageButton = view.findViewById<ImageButton>(R.id.imageButton)
 
         // If request comes from Gallery Fragment
-        val imageResId = arguments?.getString("imageResId") ?: 0
+        val image = arguments?.getString("image") ?: ""
+        val imageUri = arguments?.getString("imageUri") ?: ""
         val message = arguments?.getString("message") ?: ""
         if (message != "") {
-            messageTV.text = "$message <img $imageResId>."
-            sendImgText(message)
+            messageTV.text = "$message <img $imageUri>."
+            sendImage(image, message)
         }
 
         messageTV.movementMethod = ScrollingMovementMethod()
@@ -122,9 +123,9 @@ class ChatFragment : Fragment() {
         okHttpClient.dispatcher.executorService.shutdown()
     }
 
-    private fun sendImgText(message: String) {
+    private fun sendImage(image: String, message: String) {
         webSocket = okHttpClient.newWebSocket(createRequest(), webSocketListener)
-        webSocket!!.send(message)
+        webSocket!!.send("$message base64:$image")
         viewModel.addMessage(Pair(true, message))
     }
 }
