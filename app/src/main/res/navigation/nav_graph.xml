@@ -93,7 +93,7 @@
             app:destination="@id/chat_fragment">
             <argument
                 android:name="imageResId"
-                app:argType="integer" />
+                app:argType="string" />
             <argument
                 android:name="message"
                 app:argType="string" />

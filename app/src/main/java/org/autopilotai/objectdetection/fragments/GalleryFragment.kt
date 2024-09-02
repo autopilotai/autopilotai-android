@@ -41,6 +41,7 @@ import org.autopilotai.objectdetection.utils.padWithDisplayCutout
 import org.autopilotai.objectdetection.utils.showImmersive
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
+import java.io.File
 
 /** Fragment used to present the user with a gallery of photos taken */
 class GalleryFragment internal constructor() : Fragment() {
@@ -132,21 +133,14 @@ class GalleryFragment internal constructor() : Fragment() {
                     // Retrieve the text from EditText
                     val message = messageET.text.toString()
 
-                    // Retrieve the image resource ID from the mediaStoreFile
-                    val imageResId = getImageResIdFromMediaStore(mediaStoreFile.uri)
+                    // Retrieve the absolute file path from the mediaStoreFile
+                    val filePath = mediaStoreFile.file.absolutePath
 
-                    val mediaFile = mediaStoreFile.file
-//                    Create a sharing intent
-//                    val intent = Intent().apply {
-//                        // Infer media type from file extension
-//                        val mediaType = MimeTypeMap.getSingleton()
-//                            .getMimeTypeFromExtension(mediaFile.extension)
-//                        // Set the appropriate intent extra, type, action and flags
-//                        type = mediaType
-//                        action = Intent.ACTION_SEND
-//                        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-//                        putExtra(Intent.EXTRA_STREAM, mediaStoreFile.uri)
-//                    }
+                    // Convert the file path to a URI
+                    val fileUri = Uri.fromFile(File(filePath))
+
+                    // Pass the URI to the imageResId variable
+                    val imageResId = fileUri.toString()
 
                     // Navigate to ChatFragment with the retrieved data
                     findNavController().navigate(GalleryFragmentDirections.actionGalleryToChat(imageResId, message))
@@ -197,20 +191,5 @@ class GalleryFragment internal constructor() : Fragment() {
     override fun onDestroyView() {
         _fragmentGalleryBinding = null
         super.onDestroyView()
-    }
-
-    private fun getImageResIdFromMediaStore(uri: Uri?): Int {
-        if (uri == null) return 0
-
-        val projection = arrayOf(MediaStore.Images.Media._ID)
-        val cursor = requireContext().contentResolver.query(uri, projection, null, null, null)
-
-        cursor?.use {
-            if (it.moveToFirst()) {
-                val idColumn = it.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
-                return it.getInt(idColumn)
-            }
-        }
-        return 0
     }
 }

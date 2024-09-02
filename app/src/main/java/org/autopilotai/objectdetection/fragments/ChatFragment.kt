@@ -1,5 +1,6 @@
 package org.autopilotai.objectdetection.fragments
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
 import android.util.Pair
@@ -50,6 +51,7 @@ class ChatFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_chat, container, false)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -62,10 +64,10 @@ class ChatFragment : Fragment() {
         val imageButton = view.findViewById<ImageButton>(R.id.imageButton)
 
         // If request comes from Gallery Fragment
-        val imageResId = arguments?.getInt("imageResId") ?: 0
+        val imageResId = arguments?.getString("imageResId") ?: 0
         val message = arguments?.getString("message") ?: ""
         if (message != "") {
-            messageTV.text = message
+            messageTV.text = "$message <img $imageResId>."
             sendImgText(message)
         }
 
