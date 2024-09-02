@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.addCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -20,7 +19,6 @@ import com.google.android.material.snackbar.Snackbar
 import org.autopilotai.objectdetection.LoginViewModel
 import org.autopilotai.objectdetection.R
 import org.autopilotai.objectdetection.databinding.FragmentLoginBinding
-import androidx.navigation.fragment.findNavController
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 
@@ -50,13 +48,6 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-/*        navController = findNavController()
-
-        // If the user presses the back button, bring them back to the home screen.
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            navController.popBackStack(R.id.login_fragment, false)
-        }*/
 
         // Observe the authentication state so we can know if the user has logged in successfully.
         // If the user has logged in successfully, bring them back to the login screen with current user details.

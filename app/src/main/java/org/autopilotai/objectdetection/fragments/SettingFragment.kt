@@ -18,18 +18,14 @@ package org.autopilotai.objectdetection.fragments
 
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
 import org.autopilotai.objectdetection.LoginViewModel
 import org.autopilotai.objectdetection.MainViewModel
-import org.autopilotai.objectdetection.R
 import org.autopilotai.objectdetection.databinding.FragmentSettingBinding
-import androidx.lifecycle.Observer
 
 
 class SettingFragment : DialogFragment() {
@@ -68,21 +64,6 @@ class SettingFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-/*        val navController = findNavController()
-        viewModel2.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
-            when (authenticationState) {
-                LoginViewModel.AuthenticationState.AUTHENTICATED -> Log.i(TAG, "Authenticated")
-                // If the user is not logged in, they should not be able to set any preferences,
-                // so navigate them to the login fragment
-                LoginViewModel.AuthenticationState.UNAUTHENTICATED -> navController.navigate(
-                    R.id.login_fragment
-                )
-                else -> Log.e(
-                    TAG, "New $authenticationState state that doesn't require any UI change"
-                )
-            }
-        })*/
 
         viewModel.getNumThreads()?.let {
             numThreads = it
